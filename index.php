@@ -152,7 +152,7 @@ class SumLeads {
     </tr>
 HTML;
 
-            $counter++;
+         $counter++;
         }
 
         $tbody .= '</tbody>';
