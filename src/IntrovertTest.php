@@ -261,7 +261,6 @@ class IntrovertTest
                         <th>User Name</th>
                          <th>User ID Yadro</th>
                         <th>User name Yadro</th>
-                        <th>Status</th>
                         <th>Count Leads</th>
                         <th>Sum</th>
                         <th>All Sum</th>
@@ -274,10 +273,10 @@ class IntrovertTest
 
         foreach ($this->apiClients as $clientName => $clientData) {
 
-            $id_user_yadro=$clientData['user_id_yadro'];
-            $name_yadro=$clientData['user_name_yadro'];
+            $id_user_yadro=!empty($clientData['user_id_yadro']) ? $clientData['user_id_yadro']:"не найден";
+            $name_yadro=!empty($clientData['user_name_yadro']) ? $clientData['user_name_yadro']:"не найден";
 
-            $status = isset($clientData['status']) ? $clientData['status'] : 'false';
+            $status =$clientData['status']===true ? true : false;
             $countLeads = ($status === true && isset($clientData['result']['count_leads']))
                 ? $clientData['result']['count_leads']
                 : 0;
@@ -295,7 +294,6 @@ class IntrovertTest
                     <td>' . $clientName . '</td>
                     <td>'.$id_user_yadro.'</td>
                     <td>'.$name_yadro.'</td>
-                    <td>' . $status . '</td>
                     <td>' . $countLeads . '</td>
                     <td>' . $sum . '</td>
                      <td>' . $all_sum . '</td>
