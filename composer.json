@@ -2,15 +2,24 @@
   "name": "sinxalex/introvert",
   "description": "test task",
   "minimum-stability": "dev",
+  "autoload-dev": {
+    "psr-4": {
+      "IntrovertTest\\": "src/",
+      "Introvert\\": "vendor/mahatmaguru/intr-sdk-test/src/"
+    }
+  },
   "authors": [
     {
       "name":"sinxalex",
       "email": "aleshaascet@gmai.com"
     }
   ],
+  "require": {
+    "mahatmaguru/intr-sdk": "dev-master"
+  },
   "repositories": [
     {
-      "type": "git",
+      "type": "vcs",
       "url": "https://*username*@bitbucket.org/mahatmaguru/intr-sdk-test.git"
     }
   ],
