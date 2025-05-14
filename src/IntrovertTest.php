@@ -70,21 +70,35 @@ class IntrovertTest
         foreach ($this->getClients() as $client) {
         \Introvert\Configuration::getDefaultConfiguration()->setApiKey('key', $client['api'])->setHost(self::HOST_URI);
             $this->api = new \Introvert\ApiClient();
+
+            /**
+             * самому не очень нравиться как обрабатываю имя пользователя и его id
+             * можно было на обработать во время получения списка пользователей
+             * чтобы было удобней и корректней в методе getClients();
+             */
+
+
+
             try {
+                $userInfo=$this->getInfoAccount();
                 /**
                  * если соединение установлено то добавляем в массив $this->apiClients со статусом true
                  * в противном случае false, это удобно так как в случае, когда много клиентов удобно отсортировать
                  * всех у кого нет соединенис API
                  */
                 $this->apiClients[$client['name']] = [
-                    "status" => "true",
+                    "user_name_yadro" => $userInfo['name'],
+                    "user_id_yadro" => $userInfo['id'],
+                    "status" => true,
                     "error_msg" => null,
                     "result" => $this->getSum()
                 ];
             } catch (\Exception $e) {
 
                 $this->apiClients[$client['name']] = [
-                    "status" => "false",
+                    "user_name_yadro" =>"",
+                    "user_id_yadro" =>"",
+                    "status" => false,
                     "error_msg" => $e->getMessage(),
                     "result" => null
                 ];
@@ -103,6 +117,18 @@ class IntrovertTest
         if (empty($this->date_from) && empty($this->date_to)) {
             return true;
         }
+    }
+
+
+    public function getInfoAccount()
+    {
+
+        $res=$this->api->account->info();
+
+        return [
+            'id'  =>$res['result']['id'],
+            'name'=>$res['result']['name'],
+            ];
     }
 
     /**
@@ -124,7 +150,7 @@ class IntrovertTest
      * @return array
      *
      * функция для подсчета пакетно
-     * если есть параметры то запускает через
+     * если есть параметры, то запускает через
      * call_user_funk подсчет через сортировку по датам
      *
      */
@@ -168,7 +194,7 @@ class IntrovertTest
      * @throws \Introvert\ApiException
      *
      * функция для запроса сделок
-     * ссылка на документацию https://bitbucket.org/mahatmaguru/intr-sdk-test/src/master/
+     * ссылка на документацию: https://bitbucket.org/mahatmaguru/intr-sdk-test/src/master/
      */
     private function getLeads($count, $offset)
     {
@@ -218,11 +244,13 @@ class IntrovertTest
      * @return array
      * Функция для возращение результата выборки для
      * dataProvider фреймворков например: Yii2;
+     * если надо могу потом дописать для вывода под разные фреймворки,
+     * но просто исппользовал бы array_map
      */
 
     public function returnProviderData()
     {
-        return $this->apiClients;
+        return [];
     }
 
     public function renderHtml()
@@ -231,6 +259,8 @@ class IntrovertTest
                     <tr>
                         <th>#</th>
                         <th>User Name</th>
+                         <th>User ID Yadro</th>
+                        <th>User name Yadro</th>
                         <th>Status</th>
                         <th>Count Leads</th>
                         <th>Sum</th>
@@ -243,14 +273,18 @@ class IntrovertTest
 
 
         foreach ($this->apiClients as $clientName => $clientData) {
-            $status = isset($clientData['status']) ? $clientData['status'] : '';
-            $countLeads = ($status === 'true' && isset($clientData['result']['count_leads']))
+
+            $id_user_yadro=$clientData['user_id_yadro'];
+            $name_yadro=$clientData['user_name_yadro'];
+
+            $status = isset($clientData['status']) ? $clientData['status'] : 'false';
+            $countLeads = ($status === true && isset($clientData['result']['count_leads']))
                 ? $clientData['result']['count_leads']
                 : 0;
-            $sum = ($status === 'true' && isset($clientData['result']['sum']))
+            $sum = ($status === true && isset($clientData['result']['sum']))
                 ? $clientData['result']['sum']
                 : 0;
-            $all_sum = ($status === 'true' && isset($clientData['result']['ALL_SUM']))
+            $all_sum = ($status === true && isset($clientData['result']['ALL_SUM']))
                 ? $clientData['result']['ALL_SUM']
                 : 0;
 
@@ -259,6 +293,8 @@ class IntrovertTest
                 <tr>
                     <td>' . $counter . '</td>
                     <td>' . $clientName . '</td>
+                    <td>'.$id_user_yadro.'</td>
+                    <td>'.$name_yadro.'</td>
                     <td>' . $status . '</td>
                     <td>' . $countLeads . '</td>
                     <td>' . $sum . '</td>
@@ -288,8 +324,6 @@ class IntrovertTest
            <hr />
          ' . $table . '</div></body>
          </html>';
-        echo $html;
-
         return $html;
     }
 

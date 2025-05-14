@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: introvert-app
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - APP_ENV=development
+    ports:
+      - "8080:80"
+
+  composer:
+    image: composer:2
+    container_name: introvert-test
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: install
