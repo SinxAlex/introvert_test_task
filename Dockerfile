@@ -10,14 +10,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nginx
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY /nginx/nginx.conf /etc/nginx/nginx.conf
 
 WORKDIR /var/www/html
+
+#копируем файлы проекта
+COPY . .
+
 
 EXPOSE 80
 
